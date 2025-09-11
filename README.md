@@ -9,6 +9,7 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
 
 ## Quickstart
 - Requirements: Python 3.11+
+- Optional: PostgreSQL for database development
 - Install tools: `make setup`
 - Run API: `python3 -m src.app`
 - Endpoints:
@@ -29,6 +30,7 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
 - `src/search` – indexing & queries
 - `src/notifications` – email/in-app alerts
 - `tests/` – mirrors `src/`
+- `migrations/` – SQL schema and seeds (PostgreSQL)
 
 ## Planning & Guidelines
 - Architecture & checklists: see `DEVELOPMENT_PLAN.md`
@@ -36,6 +38,14 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
 
 ## Backlog Seeding
 - Actions → run “Seed Backlog” to create milestones, labels, and issues from `.github/backlog.json`.
+
+## Database Schema & Migrations
+- Location: `migrations/`
+  - `0001_init.sql` – tables for code lists, users, documents (with regex check and status), audit_logs, and helpful indexes.
+  - `0002_seed_codes.sql` – example data for code lists.
+- Apply with psql:
+  - Export `DATABASE_URL` (e.g., `export DATABASE_URL=postgres://user:pass@localhost:5432/dms_dev`)
+  - Run: `make migrate-psql`
 
 ## Workflows
 - CI (Python): Lint (Ruff), format (Black), and run tests (Pytest) on pushes/PRs to `main`.

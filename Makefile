@@ -11,6 +11,7 @@ help:
 	@echo "  make format - Apply autoformatters (Black/Prettier/etc.)"
 	@echo "  make build  - Build/compile project when applicable"
 	@echo "  make clean  - Remove typical build artifacts"
+	@echo "  make migrate-psql - Apply SQL migrations with psql (DATABASE_URL required)"
 
 setup:
 	@if [ -f package.json ]; then \
@@ -122,3 +123,10 @@ build:
 clean:
 	@echo "Cleaning typical artifacts..."
 	@rm -rf dist build target node_modules .pytest_cache **/__pycache__ *.egg-info || true
+
+migrate-psql:
+	@if [ -z "$$DATABASE_URL" ]; then \
+		echo "DATABASE_URL env var is required (e.g., postgres://user:pass@localhost:5432/dbname)"; \
+		exit 1; \
+	fi; \
+	bash scripts/migrate.sh
