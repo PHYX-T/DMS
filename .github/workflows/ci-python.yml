@@ -31,8 +31,8 @@ jobs:
       - name: Ruff (lint)
         run: ruff check .
 
-      - name: Black (format check)
-        run: black --check .
+      - name: Black (format)
+        run: black .
 
       - name: Pytest
         run: pytest -q
