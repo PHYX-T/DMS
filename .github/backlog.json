@@ -28,89 +28,68 @@
       "milestone": "M0 – Foundation"
     },
 
-    {
-      "title": "Define data models: Document, AuditLog, CodeList",
-      "body": "Create domain models and interfaces; include status enum, metadata, files, and change history.",
-      "labels": ["enhancement", "M1"],
-      "milestone": "M1 – Domain Models"
-    },
-    {
-      "title": "DB schema and migrations",
-      "body": "Create tables for documents, audit logs, and codelists; unique index on document ID.",
-      "labels": ["task", "database", "M1"],
-      "milestone": "M1 – Domain Models"
-    },
-    {
-      "title": "Validation rules and unit tests",
-      "body": "Enforce document ID regex and mandatory metadata; add tests (≥80% coverage on changed code).",
-      "labels": ["test", "M1"],
-      "milestone": "M1 – Domain Models"
-    },
+    {"title": "Select database (Postgres) and doc storage (S3-compatible)", "body": "Decide DB and file storage; document tradeoffs.", "labels": ["database", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Define ERD and migration plan", "body": "Design tables: documents, audit_logs, code_lists, users/roles; versioning fields.", "labels": ["database", "design", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Implement migrations and runner", "body": "Add migrations/ directory and CLI; create initial schema.", "labels": ["database", "task", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Unique constraints and indexes", "body": "Enforce unique document ID; indexes for search filters.", "labels": ["database", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Domain models: Document", "body": "Fields, invariants, factory methods; version semantics.", "labels": ["enhancement", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Domain models: AuditLog (append-only)", "body": "Append-only design; helpers for writing events.", "labels": ["enhancement", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Domain models: CodeList CRUD", "body": "Company, Subsidiary, Department, Type code lists.", "labels": ["enhancement", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Validation library", "body": "Regex for IDs, mandatory metadata, DTO schemas.", "labels": ["test", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Seed data for dev", "body": "Seed code lists and a few documents for local testing.", "labels": ["task", "M1"], "milestone": "M1 – Domain Models"},
 
-    {
-      "title": "Workflow state machine (Draft→Review→Approved→Archived/Obsolete)",
-      "body": "Implement transitions, major/minor revisions, and guards; persist in audit logs.",
-      "labels": ["enhancement", "M2"],
-      "milestone": "M2 – Workflows & RBAC"
-    },
-    {
-      "title": "RBAC middleware and role mapping",
-      "body": "Enforce End User, Owner, Controller, Admin, QMS roles; deny-by-default; authorization tests.",
-      "labels": ["security", "M2"],
-      "milestone": "M2 – Workflows & RBAC"
-    },
+    {"title": "Define workflow state machine", "body": "States, transitions, guards; major/minor revision rules.", "labels": ["enhancement", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Implement workflow engine", "body": "Functions for transitions; record to audit logs.", "labels": ["enhancement", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "RBAC role definitions and matrix", "body": "End User, Owner, Controller, Admin, QMS; permission map.", "labels": ["security", "design", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Auth middleware & guards", "body": "Enforce RBAC per endpoint; deny by default.", "labels": ["security", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Workflow endpoints", "body": "submit, approve, reject, archive; version bump.", "labels": ["enhancement", "api", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Authorization unit tests", "body": "Test role gates and negative paths.", "labels": ["test", "M2"], "milestone": "M2 – Workflows & RBAC"},
 
-    {
-      "title": "Upload pipeline and storage segregation",
-      "body": "Upload source securely, convert/publish PDF for end-user access; restrict source file access.",
-      "labels": ["enhancement", "files", "M3"],
-      "milestone": "M3 – Document Handling"
-    },
-    {
-      "title": "Versioning and automatic archiving",
-      "body": "Implement major/minor version bumps; archive obsolete versions upon new approvals.",
-      "labels": ["enhancement", "M3"],
-      "milestone": "M3 – Document Handling"
-    },
+    {"title": "File storage adapters", "body": "Local (dev) and S3-compatible (prod) implementations.", "labels": ["files", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Upload API (multipart)", "body": "Validate size/type; compute checksum; virus-scan stub.", "labels": ["api", "files", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Publish PDF pipeline", "body": "Convert to PDF and store in public area; set ACLs.", "labels": ["files", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Restrict source access", "body": "Signed URLs / private bucket; enforce RBAC.", "labels": ["security", "files", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Versioning rules and latest pointer", "body": "Major/minor increments; mark latest; block obsolete.", "labels": ["enhancement", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Auto-archive obsolete versions", "body": "Move prior versions to archive on approval.", "labels": ["enhancement", "M3"], "milestone": "M3 – Document Handling"},
 
-    {
-      "title": "Search indexing and queries",
-      "body": "Index metadata and keywords; implement filters; target P95 < 2s on seeded data.",
-      "labels": ["enhancement", "search", "M4"],
-      "milestone": "M4 – Search & Reporting"
-    },
-    {
-      "title": "Reports and exports",
-      "body": "Implement KPIs (pending reviews, overdue revisions) and exports (PDF/Excel).",
-      "labels": ["enhancement", "reporting", "M4"],
-      "milestone": "M4 – Search & Reporting"
-    },
+    {"title": "Choose search approach", "body": "DB FTS or external engine; document choice.", "labels": ["search", "design", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "Build search index", "body": "Index metadata/keywords; update on changes.", "labels": ["search", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "Search API (filters + pagination)", "body": "Company, Subsidiary, Department, Type, Status; sort.", "labels": ["search", "api", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "Performance harness for search", "body": "Seed dataset and benchmark P95 < 2s.", "labels": ["performance", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "KPIs & reports endpoints", "body": "Pending reviews, overdue revisions; export PDF/Excel.", "labels": ["reporting", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "Cache layer for queries", "body": "Basic caching and invalidation strategy.", "labels": ["performance", "M4"], "milestone": "M4 – Search & Reporting"},
 
-    {
-      "title": "Notifications subsystem (email)",
-      "body": "Send review due and approval notifications with templates and throttling.",
-      "labels": ["enhancement", "notifications", "M5"],
-      "milestone": "M5 – Notifications & SSO"
-    },
-    {
-      "title": "Microsoft 365 SSO integration",
-      "body": "Integrate SSO, map claims/groups to roles; document configuration.",
-      "labels": ["security", "sso", "M5"],
-      "milestone": "M5 – Notifications & SSO"
-    },
+    {"title": "SMTP configuration and templates", "body": "Set up email transport; template partials and themes.", "labels": ["notifications", "M5"], "milestone": "M5 – Notifications & SSO"},
+    {"title": "Review reminder scheduler", "body": "Periodic reminders for pending reviews/overdue items.", "labels": ["notifications", "M5"], "milestone": "M5 – Notifications & SSO"},
+    {"title": "Approval/expiry notifications", "body": "Email on approvals and upcoming expiries; throttle.", "labels": ["notifications", "M5"], "milestone": "M5 – Notifications & SSO"},
+    {"title": "Microsoft 365 SSO integration", "body": "OIDC flow; map groups/claims to roles; docs.", "labels": ["security", "sso", "M5"], "milestone": "M5 – Notifications & SSO"},
+    {"title": "Login/logout endpoints & session mgmt", "body": "Implement auth routes and session security.", "labels": ["security", "M5"], "milestone": "M5 – Notifications & SSO"},
 
-    {
-      "title": "Security hardening and perf tuning",
-      "body": "Validate inputs across API, rate-limit where needed, optimize hotspots to meet SLOs.",
-      "labels": ["security", "performance", "M6"],
-      "milestone": "M6 – Hardening & Release"
-    },
-    {
-      "title": "Backups, monitoring, and runbooks",
-      "body": "Set up backups/restore drills, metrics/alerts, and operational runbooks for on-call.",
-      "labels": ["ops", "M6"],
-      "milestone": "M6 – Hardening & Release"
-    }
+    {"title": "API input validation & error model", "body": "Centralize validation and consistent error responses.", "labels": ["security", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Security headers and CORS", "body": "Harden responses and set proper CORS policy.", "labels": ["security", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Rate limiting & basic abuse protections", "body": "Protect sensitive endpoints and avoid abuse.", "labels": ["security", "performance", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Structured logging and correlation IDs", "body": "Add request IDs and structured logs.", "labels": ["ops", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Metrics & dashboards", "body": "Latency, error rates, workflow durations, indexing times.", "labels": ["ops", "performance", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Alerts for SLOs", "body": "Configure alerting for critical SLO breaches.", "labels": ["ops", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Backups and restore runbook", "body": "Automate backups and document restore process.", "labels": ["ops", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Load test and tuning", "body": "Benchmark and optimize bottlenecks to hit SLAs.", "labels": ["performance", "M6"], "milestone": "M6 – Hardening & Release"}
+
+    ,
+    {"title": "Frontend: init Vue + Tailwind app", "body": "Scaffold frontend project and CI.", "labels": ["frontend", "M1"], "milestone": "M1 – Domain Models"},
+    {"title": "Frontend: auth and route guards", "body": "Integrate auth and protect routes per role.", "labels": ["frontend", "security", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Frontend: dashboards per role", "body": "Role-based widgets (controllers, QMS, end users).", "labels": ["frontend", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "Frontend: search page with filters", "body": "Query, filters, pagination, empty states.", "labels": ["frontend", "search", "M4"], "milestone": "M4 – Search & Reporting"},
+    {"title": "Frontend: upload form with autosuggest", "body": "Validate ID/metadata; autosuggest codes.", "labels": ["frontend", "files", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Frontend: document view", "body": "Embedded PDF, metadata, version history.", "labels": ["frontend", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Frontend: review queue", "body": "Approve/reject UI with comments.", "labels": ["frontend", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Frontend: reports UI", "body": "KPIs list and export actions.", "labels": ["frontend", "reporting", "M4"], "milestone": "M4 – Search & Reporting"},
+
+    {"title": "API docs (OpenAPI)", "body": "Generate and publish OpenAPI spec; include examples.", "labels": ["docs", "api", "M2"], "milestone": "M2 – Workflows & RBAC"},
+    {"title": "Admin documentation", "body": "RBAC roles, code lists management, backups, and restore.", "labels": ["docs", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "User guide", "body": "Search, view, upload, review workflows.", "labels": ["docs", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Security policy and threat model", "body": "Document threats and mitigations; update periodically.", "labels": ["security", "docs", "M6"], "milestone": "M6 – Hardening & Release"},
+    {"title": "Dockerize backend and frontend", "body": "Dockerfiles, docker-compose for dev and CI.", "labels": ["ops", "M0"], "milestone": "M0 – Foundation"},
+    {"title": "Integration tests with DB and storage", "body": "CI job using services for Postgres and MinIO.", "labels": ["test", "ci", "M3"], "milestone": "M3 – Document Handling"},
+    {"title": "Coverage reports and badge", "body": "Upload coverage to artifact; add badge to README.", "labels": ["ci", "test", "M0"], "milestone": "M0 – Foundation"}
   ]
 }
-

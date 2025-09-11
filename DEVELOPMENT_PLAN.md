@@ -13,64 +13,87 @@
 - M6 – Hardening & Release: Security review, perf tuning, backup/restore, runbooks. Exit: production release checklist complete.
 
 ## Architecture Tasks
-- [ ] Define storage (e.g., Postgres + object storage for files) and create schema migrations (`migrations/`).
-- [ ] Establish service layout: `src/core/{documents,codes,workflows,rbac,audit}`, `src/api`, `src/search`, `src/notifications`.
-- [ ] Add configuration loader (env + YAML) and secrets handling.
+- [ ] Choose primary DB (Postgres) and file storage (S3-compatible) strategy.
+- [ ] Create schema migrations in `migrations/` and migration runner.
+- [ ] Establish services: `src/core/{documents,codes,workflows,rbac,audit}`, `src/api`, `src/search`, `src/notifications`.
+- [ ] Config loader (env + YAML), config validation, and secrets handling.
+- [ ] Define error model and centralized exception handling in API.
+- [ ] Add feature flags scaffolding (optional) and configuration docs.
 
 ## Data Model & Validation
-- [ ] Document: ID, Title, Version, Status, Owner, Controller, Metadata, Files, ChangeHistory.
-- [ ] AuditLog: ID, DocumentID, Action, User, Timestamp (append-only).
-- [ ] CodeList: company, subsidiary, department, type.
-- [ ] Enforce regex: `^[A-Z]{3}-[A-Z]{2}-[A-Z]{3}-[A-Z]{3}-\d{3}$` and mandatory metadata.
-- [ ] Prevent duplicate IDs at DB level (unique index) + API.
+- [ ] Document entity with constraints: unique ID, status enum, version rules.
+- [ ] AuditLog append-only table; trigger or guard to prevent updates/deletes.
+- [ ] CodeList tables and admin CRUD.
+- [ ] Enforce regex `^[A-Z]{3}-[A-Z]{2}-[A-Z]{3}-[A-Z]{3}-\d{3}$` + mandatory metadata fields.
+- [ ] API-level validation schemas (DTOs) and helpful error messages.
+- [ ] DB unique indexes for document ID and code lists; foreign keys.
 
 ## API & Services
-- [ ] Endpoints (initial): `/health`, `/validate`, `/duplicate` (dev stub).
-- [ ] CRUD: `/documents` (create/upload, get, update, list with filters), `/codes`, `/reports`.
-- [ ] Workflow: `/documents/{id}/submit`, `/approve`, `/reject`, `/archive`, version bump.
-- [ ] AuthN/Z middleware with RBAC enforcement (End User, Owner, Controller, Admin, QMS).
+- [ ] Health + info endpoints.
+- [ ] Documents API: create/read/update/list with filters & pagination.
+- [ ] Upload endpoints (source + PDF publish) with size/type validation.
+- [ ] Workflow endpoints: submit, approve, reject, archive; version bump.
+- [ ] Codes API: manage code lists (CRUD) with permissions.
+- [ ] Reports API: KPIs and exports.
+- [ ] AuthN (SSO later) placeholders; RBAC middleware and permission checks.
+- [ ] Audit logging on all state-changing operations.
 
 ## Document Handling
-- [ ] Upload pipeline: store source securely; convert/publish PDF; attach metadata.
-- [ ] Versioning: major/minor increments, latest flag, obsolete blocking.
-- [ ] Archiving: move obsolete versions to restricted area; retain change history.
+- [ ] Storage adapters: local dev, S3-compatible prod; signed URLs for downloads.
+- [ ] Upload: antivirus scan stub, checksum, max size, MIME/type validation.
+- [ ] Publish PDF: conversion pipeline; store PDF in public bucket/area.
+- [ ] Restrict source access; ensure ACL separation.
+- [ ] Versioning rules: major/minor, latest pointer, obsolete/access blocking.
+- [ ] Auto-archive obsolete versions on new approvals.
 
 ## Search & Reporting
-- [ ] Index metadata/keywords; add full-text support where available.
-- [ ] Filters: Company, Subsidiary, Department, Type, Status.
-- [ ] Performance SLO: < 2s typical queries; add basic caching.
-- [ ] Reports: pending reviews, overdue revisions, compliance KPIs (export PDF/Excel).
+- [ ] Pick search approach (DB FTS or external engine) and index strategy.
+- [ ] Implement index build and incremental updates on document changes.
+- [ ] Search API: query string + filters; relevance ranking; pagination/sorting.
+- [ ] Performance harness with seeded dataset; meet P95 < 2s.
+- [ ] Reports: pending reviews, overdue revisions, KPIs; export PDF/Excel.
+- [ ] Cache layer for repeated queries; cache invalidation.
 
 ## RBAC & SSO
-- [ ] Role matrix and permission checks per endpoint/action.
-- [ ] Integrate Microsoft 365 SSO; map groups/claims to roles.
-- [ ] Admin UI/API for role assignments.
+- [ ] Role matrix and permission checks per endpoint/action; deny-by-default.
+- [ ] Microsoft 365 SSO integration (OpenID Connect); callback endpoints.
+- [ ] Claims-to-roles mapping and role override controls.
+- [ ] Admin UI/API for role assignments; audit role changes.
 
 ## Notifications
-- [ ] Events: review due, approvals pending, upcoming expiry.
-- [ ] Channels: email (SMTP), in-app notifications; templates and throttling.
+- [ ] Events: review due, approvals pending, upcoming expiry; event bus abstraction.
+- [ ] SMTP setup; email templates; throttling and digest options.
+- [ ] In-app notifications feed; mark-as-read endpoints.
 
 ## Frontend (if applicable)
-- [ ] Tech: Vue + Tailwind + HeadlessUI.
-- [ ] Views: Dashboard (role-based), Search, Upload, Document View, Review Queue.
-- [ ] Integrate API; show version, metadata, change history; prevent access to obsolete.
+- [ ] Bootstrap Vue + Tailwind project and CI.
+- [ ] Auth integration and route guards with roles.
+- [ ] Dashboard per role (Controllers, QMS, End Users).
+- [ ] Search with filters and pagination; empty/error states.
+- [ ] Upload form with code autosuggest and validation.
+- [ ] Document view with embedded PDF, metadata, version history.
+- [ ] Review queue UI for approve/reject; comments.
+- [ ] Reports UI and exports.
 
 ## Quality & CI/CD
-- [ ] Tests: unit (≥80% for changed code), integration, e2e, regression.
-- [ ] Add `requirements-dev.txt` and `make test|lint|format` to CI.
-- [ ] Static checks: Ruff/Black (Python), ESLint/Prettier (web), secret scanning.
-- [ ] Build: artifact creation; deploy to staging via workflow.
+- [ ] Unit, integration, and e2e tests; coverage reports and thresholds.
+- [ ] CI jobs for backend, frontend; matrix for Python versions if needed.
+- [ ] Secret scanning and dependency audit jobs.
+- [ ] Build artifacts (Docker images); push to registry; staging deploy.
+- [ ] Add CI status badges and PR checks.
 
 ## Security & Compliance
-- [ ] Input validation at API boundaries; centralized error handling.
-- [ ] Secrets: `.env` + `.env.example`; never commit real secrets.
-- [ ] Audit logs immutable; access logs retained per policy; backups tested.
-- [ ] Data retention policy and GDPR considerations documented.
+- [ ] Input validation at API boundaries; sanitize logs; consistent error codes.
+- [ ] Security headers and CORS config.
+- [ ] Secrets: `.env` + `.env.example`; vault in prod; key rotation policy.
+- [ ] Audit logs immutable; retention policies; backup/restore drills.
+- [ ] GDPR/data retention documentation and DSR procedures.
 
 ## Observability & Ops
-- [ ] Structured logging with correlation IDs.
-- [ ] Metrics: request latency, error rate, queue depth, indexing time.
-- [ ] Alerts for SLO violations; runbooks for common incidents.
+- [ ] Structured logs with correlation IDs; trace IDs for workflows.
+- [ ] Metrics: latency, errors, workflow durations, indexing times.
+- [ ] Dashboards and alerts for SLOs; on-call rota.
+- [ ] Runbooks for common incidents (DB down, storage issues, email failures).
 
 ## Test Plan (Checklists)
 - [ ] Validation: ID regex, mandatory metadata, duplicate prevention.
