@@ -1,0 +1,92 @@
+name: Kickoff Milestone Issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      milestone:
+        description: "Milestone title to seed (from .github/backlog.json)"
+        required: false
+        default: "M1 – Domain Models"
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Seed issues for selected milestone
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const milestoneTitle = core.getInput('milestone') || 'M1 – Domain Models';
+            const data = JSON.parse(fs.readFileSync('.github/backlog.json', 'utf8'));
+
+            // Ensure milestone exists (open)
+            const existingMilestones = await github.paginate(github.rest.issues.listMilestones, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all'
+            });
+            let milestone = existingMilestones.find(m => m.title === milestoneTitle);
+            if (!milestone) {
+              const created = await github.rest.issues.createMilestone({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: milestoneTitle
+              });
+              milestone = created.data;
+            } else if (milestone.state === 'closed') {
+              const reopened = await github.rest.issues.updateMilestone({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                milestone_number: milestone.number,
+                state: 'open'
+              });
+              milestone = reopened.data;
+            }
+
+            // Ensure labels exist
+            const existingLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const labelSet = new Set(existingLabels.map(l => l.name));
+            for (const issue of data.issues || []) {
+              if (issue.milestone === milestoneTitle) {
+                for (const name of (issue.labels || [])) {
+                  if (!labelSet.has(name)) {
+                    await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+                    labelSet.add(name);
+                  }
+                }
+              }
+            }
+
+            // Existing issues by title to avoid duplicates
+            const existingIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all'
+            });
+            const byTitle = new Set(existingIssues.map(i => i.title));
+
+            // Create only the issues for the selected milestone
+            for (const issue of data.issues || []) {
+              if (issue.milestone !== milestoneTitle) continue;
+              if (byTitle.has(issue.title)) continue;
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issue.title,
+                body: issue.body || '',
+                labels: issue.labels || [],
+                milestone: milestone.number
+              });
+            }
+

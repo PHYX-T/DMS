@@ -1,0 +1,43 @@
+name: Close Milestone
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "Milestone title to close"
+        required: false
+        default: "M0 – Foundation"
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close milestone by title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = core.getInput('title') || 'M0 – Foundation';
+            const milestones = await github.paginate(github.rest.issues.listMilestones, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all'
+            });
+            const found = milestones.find(m => m.title === title);
+            if (!found) {
+              core.setFailed(`Milestone not found: ${title}`);
+              return;
+            }
+            if (found.state !== 'closed') {
+              await github.rest.issues.updateMilestone({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                milestone_number: found.number,
+                state: 'closed'
+              });
+            }
+            core.summary.addHeading('Milestone Closed').addRaw(`Title: ${title}`).write();
+

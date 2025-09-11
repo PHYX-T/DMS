@@ -4,7 +4,7 @@
 - ISO 9001:2015–aligned DMS for controlled documents, with ID schema `AAA-BB-CCC-DDD-XXX`, RBAC, workflows, search < 2s, immutable audit logs, and PDF publication with restricted sources.
 
 ## Milestones (Exit Criteria)
-- M0 – Foundation: Repo scaffolding, Makefile, basic API (`/health`, `/validate`), tests and CI smoke. Exit: green CI, coding standards in place.
+- M0 – Foundation [Completed]: Repo scaffolding, Makefile, basic API (`/health`, `/validate`), tests and CI smoke. Exit: green CI, coding standards in place.
 - M1 – Domain Models: `Document`, `AuditLog`, `CodeList`; persistence stubs; validation rules. Exit: CRUD on dev DB, unit tests ≥80% for domain.
 - M2 – Workflows & RBAC: Draft→Review→Approved→Archived/Obsolete; major/minor paths; role gates. Exit: API flows with state transitions + authorization tests.
 - M3 – Document Handling: Upload, metadata validation, PDF publication, source storage (restricted), versioning, archiving. Exit: end-to-end happy path.

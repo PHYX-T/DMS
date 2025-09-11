@@ -34,3 +34,24 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
 ## Backlog Seeding
 - Actions → run “Seed Backlog” to create milestones, labels, and issues from `.github/backlog.json`.
 
+## Session Summary (What We Set Up)
+- Repo scaffolding with domain-first structure and `AGENTS.md` contributor guide.
+- Python minimal API server with endpoints: `/`, `/health`, `/validate`, `/duplicate`, `/duplicates/*`.
+- Document ID validator (`src/core/documents/validator.py`) and pytest unit tests.
+- Makefile targets: `setup`, `run`, `test`, `lint`, `format`, `build`, `clean`.
+- Environment/config: `.env.example`, `.env` (HOST/PORT), `config/config.example.yaml`, lightweight `.env` loader.
+- GitHub: issue templates, backlog (`.github/backlog.json`), seeding workflow, and Python CI (Ruff, Black format, Pytest).
+- Planning: `DEVELOPMENT_PLAN.md` with milestones and detailed checklists.
+- Pushed to GitHub and merged existing `info` file from remote `main`.
+
+## TODOs (Short Term)
+- Persistence: choose DB (e.g., Postgres), add migrations and data access layer.
+- API: implement `/documents` CRUD, workflow routes (submit/approve/reject/archive), and error handling.
+- RBAC: middleware enforcing roles (End User, Owner, Controller, Admin, QMS).
+- Duplicate checks: replace in-memory set with DB uniqueness and queries.
+- Upload pipeline: secure source storage, PDF publication for end users.
+- Search: index metadata/keywords, add filters; target <2s latency.
+- CI/CD: add DB service for integration tests; consider coverage upload.
+- Ops: add Dockerfile and container run scripts; document HOST/PORT for containers.
+- Security: secret scanning, input validation at boundaries, audit log write path.
+
