@@ -1,0 +1,64 @@
+name: Auto Seed Backlog
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/backlog.json'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Seed backlog on push to main when backlog.json changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '.github/backlog.json';
+            const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+            // Milestones
+            const existingMilestones = await github.paginate(github.rest.issues.listMilestones, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+            const milestoneMap = new Map(existingMilestones.map(m => [m.title, m.number]));
+            for (const m of data.milestones || []) {
+              if (!milestoneMap.has(m.title)) {
+                const created = await github.rest.issues.createMilestone({ owner: context.repo.owner, repo: context.repo.repo, title: m.title, description: m.description || '' });
+                milestoneMap.set(created.data.title, created.data.number);
+              }
+            }
+
+            // Labels with colors
+            const existingLabels = await github.paginate(github.rest.issues.listLabelsForRepo, { owner: context.repo.owner, repo: context.repo.repo });
+            const labelSet = new Set(existingLabels.map(l => l.name));
+            const labelColors = {
+              bug: 'd73a4a', enhancement: 'a2eeef', task: 'bfdadc', ci: 'c5def5', database: 'f9d0c4', test: 'e4e669', files: 'fef2c0', search: 'a4f287', reporting: 'c2e0c6', notifications: 'cfd3ff', sso: 'c0ffee', security: 'b60205', performance: 'ffd78e', ops: 'd4c5f9', docs: '0075ca', api: '0366d6', frontend: '0e8a16', design: 'fbca04', M0: 'ededed', M1: 'ededed', M2: 'ededed', M3: 'ededed', M4: 'ededed', M5: 'ededed', M6: 'ededed'
+            };
+            for (const name of Object.keys(labelColors)) {
+              if (!labelSet.has(name)) {
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: labelColors[name] });
+                labelSet.add(name);
+              }
+            }
+
+            // Issues by title to avoid dupes
+            const existingIssues = await github.paginate(github.rest.issues.listForRepo, { owner: context.repo.owner, repo: context.repo.repo, state: 'all' });
+            const byTitle = new Set(existingIssues.map(i => i.title));
+
+            for (const issue of data.issues || []) {
+              if (byTitle.has(issue.title)) continue;
+              const milestoneNumber = milestoneMap.get(issue.milestone) || undefined;
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: issue.title, body: issue.body || '', labels: issue.labels || [], milestone: milestoneNumber });
+            }
+

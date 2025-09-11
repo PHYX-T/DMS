@@ -42,16 +42,37 @@ jobs:
               }
             }
 
-            // Ensure labels
+            // Ensure labels (with colors)
             const existingLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo
             });
             const labelSet = new Set(existingLabels.map(l => l.name));
-            const desired = new Set(["bug","enhancement","task","ci","database","test","files","search","reporting","notifications","sso","security","performance","ops","M0","M1","M2","M3","M4","M5","M6"]);
+            const labelColors = {
+              bug: 'd73a4a',
+              enhancement: 'a2eeef',
+              task: 'bfdadc',
+              ci: 'c5def5',
+              database: 'f9d0c4',
+              test: 'e4e669',
+              files: 'fef2c0',
+              search: 'a4f287',
+              reporting: 'c2e0c6',
+              notifications: 'cfd3ff',
+              sso: 'c0ffee',
+              security: 'b60205',
+              performance: 'ffd78e',
+              ops: 'd4c5f9',
+              docs: '0075ca',
+              api: '0366d6',
+              frontend: '0e8a16',
+              design: 'fbca04',
+              M0: 'ededed', M1: 'ededed', M2: 'ededed', M3: 'ededed', M4: 'ededed', M5: 'ededed', M6: 'ededed'
+            };
+            const desired = new Set(Object.keys(labelColors));
             for (const name of desired) {
               if (!labelSet.has(name)) {
-                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: labelColors[name] || 'ededed' });
                 labelSet.add(name);
               }
             }
@@ -76,4 +97,3 @@ jobs:
                 milestone: milestoneNumber
               });
             }
-
