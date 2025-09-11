@@ -3,14 +3,14 @@
 ## Scope & Goals
 - ISO 9001:2015–aligned DMS for controlled documents, with ID schema `AAA-BB-CCC-DDD-XXX`, RBAC, workflows, search < 2s, immutable audit logs, and PDF publication with restricted sources.
 
-## Milestones (Exit Criteria)
+## Sprint Roadmap (Exit Criteria)
 - M0 – Foundation [Completed]: Repo scaffolding, Makefile, basic API (`/health`, `/validate`), tests and CI smoke. Exit: green CI, coding standards in place.
-- M1 – Domain Models: `Document`, `AuditLog`, `CodeList`; persistence stubs; validation rules. Exit: CRUD on dev DB, unit tests ≥80% for domain.
-- M2 – Workflows & RBAC: Draft→Review→Approved→Archived/Obsolete; major/minor paths; role gates. Exit: API flows with state transitions + authorization tests.
-- M3 – Document Handling: Upload, metadata validation, PDF publication, source storage (restricted), versioning, archiving. Exit: end-to-end happy path.
-- M4 – Search & Reporting: Metadata index, keyword search, KPIs/reports. Exit: P95 search latency <2s on seeded dataset.
-- M5 – Notifications & SSO: Review/expiry alerts, Microsoft 365 SSO. Exit: login via SSO in staging; emails in dev.
-- M6 – Hardening & Release: Security review, perf tuning, backup/restore, runbooks. Exit: production release checklist complete.
+- Sprint 1 – Database Schema: DB selection (Postgres), ERD, migrations, unique constraints, seed data. Exit: schema migrated locally with seed loaded.
+- Sprint 2 – Frontend Foundations: Vue/Tailwind scaffold, auth guards (stub), core views (Search, Upload, Document View, Review Queue, Reports) wired to mock adapters. Exit: UI flows navigable with mocked data.
+- Sprint 3 – Backend Logic & Workflows: Domain models, validation, Documents API CRUD, storage adapters, PDF publish, RBAC, workflow engine/endpoints, audit logging, OpenAPI, integration tests. Exit: end-to-end document lifecycle in dev.
+- Sprint 4 – Search & Reporting: Indexing strategy, search API with filters, KPIs/exports, performance harness. Exit: P95 search latency < 2s on seeded data.
+- Sprint 5 – SSO & Notifications: Microsoft 365 SSO, SMTP templates, reminders, approval/expiry emails. Exit: staging login with SSO; dev emails send.
+- Sprint 6 – Hardening & Release: Validation/error model, headers/CORS, rate limiting, observability, backups, load testing, docs. Exit: production readiness checklist complete.
 
 ## Architecture Tasks
 - [ ] Choose primary DB (Postgres) and file storage (S3-compatible) strategy.
