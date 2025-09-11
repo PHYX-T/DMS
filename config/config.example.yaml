@@ -1,0 +1,33 @@
+# Application configuration (example)
+
+app:
+  name: Specs-Kit DMS
+  environment: development
+
+security:
+  sso:
+    provider: microsoft365
+    tenant_id: "YOUR_TENANT_ID"
+  rbac:
+    roles: [end_user, owner, controller, admin, qms]
+
+storage:
+  documents_bucket: dms-documents
+  restrict_source_files: true
+
+validation:
+  document_id_regex: "^[A-Z]{3}-[A-Z]{2}-[A-Z]{3}-[A-Z]{3}-\\d{3}$"
+  mandatory_metadata:
+    - CompanyCode
+    - SubsidiaryCode
+    - DepartmentCode
+    - DocumentTypeCode
+    - IssueDate
+
+search:
+  target_latency_ms: 2000
+
+notifications:
+  email_from: dms-noreply@example.com
+  enable_review_reminders: true
+

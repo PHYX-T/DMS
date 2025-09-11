@@ -1,0 +1,116 @@
+{
+  "milestones": [
+    {"title": "M0 – Foundation", "description": "Scaffold, basic API, CI smoke"},
+    {"title": "M1 – Domain Models", "description": "Models, validation, migrations"},
+    {"title": "M2 – Workflows & RBAC", "description": "State machine + authorization"},
+    {"title": "M3 – Document Handling", "description": "Upload, PDF publish, archiving"},
+    {"title": "M4 – Search & Reporting", "description": "Indexing, filters, KPIs"},
+    {"title": "M5 – Notifications & SSO", "description": "Email alerts, Microsoft 365 SSO"},
+    {"title": "M6 – Hardening & Release", "description": "Security, perf, runbooks"}
+  ],
+  "issues": [
+    {
+      "title": "Scaffold repository and Makefile",
+      "body": "Initialize repo structure, Makefile targets (setup/run/test/lint/format/build), and starter modules per AGENTS.md.",
+      "labels": ["task", "M0"],
+      "milestone": "M0 – Foundation"
+    },
+    {
+      "title": "Basic API: /health and /validate endpoints",
+      "body": "Expose health check and document ID validation using default regex; add root index page.",
+      "labels": ["enhancement", "M0"],
+      "milestone": "M0 – Foundation"
+    },
+    {
+      "title": "Set up CI with lint and tests",
+      "body": "Add GitHub Actions for Python lint (Ruff/Black) and pytest; ensure green on main.",
+      "labels": ["task", "ci", "M0"],
+      "milestone": "M0 – Foundation"
+    },
+
+    {
+      "title": "Define data models: Document, AuditLog, CodeList",
+      "body": "Create domain models and interfaces; include status enum, metadata, files, and change history.",
+      "labels": ["enhancement", "M1"],
+      "milestone": "M1 – Domain Models"
+    },
+    {
+      "title": "DB schema and migrations",
+      "body": "Create tables for documents, audit logs, and codelists; unique index on document ID.",
+      "labels": ["task", "database", "M1"],
+      "milestone": "M1 – Domain Models"
+    },
+    {
+      "title": "Validation rules and unit tests",
+      "body": "Enforce document ID regex and mandatory metadata; add tests (≥80% coverage on changed code).",
+      "labels": ["test", "M1"],
+      "milestone": "M1 – Domain Models"
+    },
+
+    {
+      "title": "Workflow state machine (Draft→Review→Approved→Archived/Obsolete)",
+      "body": "Implement transitions, major/minor revisions, and guards; persist in audit logs.",
+      "labels": ["enhancement", "M2"],
+      "milestone": "M2 – Workflows & RBAC"
+    },
+    {
+      "title": "RBAC middleware and role mapping",
+      "body": "Enforce End User, Owner, Controller, Admin, QMS roles; deny-by-default; authorization tests.",
+      "labels": ["security", "M2"],
+      "milestone": "M2 – Workflows & RBAC"
+    },
+
+    {
+      "title": "Upload pipeline and storage segregation",
+      "body": "Upload source securely, convert/publish PDF for end-user access; restrict source file access.",
+      "labels": ["enhancement", "files", "M3"],
+      "milestone": "M3 – Document Handling"
+    },
+    {
+      "title": "Versioning and automatic archiving",
+      "body": "Implement major/minor version bumps; archive obsolete versions upon new approvals.",
+      "labels": ["enhancement", "M3"],
+      "milestone": "M3 – Document Handling"
+    },
+
+    {
+      "title": "Search indexing and queries",
+      "body": "Index metadata and keywords; implement filters; target P95 < 2s on seeded data.",
+      "labels": ["enhancement", "search", "M4"],
+      "milestone": "M4 – Search & Reporting"
+    },
+    {
+      "title": "Reports and exports",
+      "body": "Implement KPIs (pending reviews, overdue revisions) and exports (PDF/Excel).",
+      "labels": ["enhancement", "reporting", "M4"],
+      "milestone": "M4 – Search & Reporting"
+    },
+
+    {
+      "title": "Notifications subsystem (email)",
+      "body": "Send review due and approval notifications with templates and throttling.",
+      "labels": ["enhancement", "notifications", "M5"],
+      "milestone": "M5 – Notifications & SSO"
+    },
+    {
+      "title": "Microsoft 365 SSO integration",
+      "body": "Integrate SSO, map claims/groups to roles; document configuration.",
+      "labels": ["security", "sso", "M5"],
+      "milestone": "M5 – Notifications & SSO"
+    },
+
+    {
+      "title": "Security hardening and perf tuning",
+      "body": "Validate inputs across API, rate-limit where needed, optimize hotspots to meet SLOs.",
+      "labels": ["security", "performance", "M6"],
+      "milestone": "M6 – Hardening & Release"
+    },
+    {
+      "title": "Backups, monitoring, and runbooks",
+      "body": "Set up backups/restore drills, metrics/alerts, and operational runbooks for on-call.",
+      "labels": ["ops", "M6"],
+      "milestone": "M6 – Hardening & Release"
+    }
+  ]
+}
+
