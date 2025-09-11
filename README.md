@@ -1,6 +1,9 @@
 # DMS – Document Management & Control
 
 [![CI (Python)](https://github.com/PHYX-T/DMS/actions/workflows/ci-python.yml/badge.svg)](https://github.com/PHYX-T/DMS/actions/workflows/ci-python.yml)
+[![Seed Backlog](https://github.com/PHYX-T/DMS/actions/workflows/seed-backlog.yml/badge.svg)](https://github.com/PHYX-T/DMS/actions/workflows/seed-backlog.yml)
+[![Close Milestone](https://github.com/PHYX-T/DMS/actions/workflows/close-milestone.yml/badge.svg)](https://github.com/PHYX-T/DMS/actions/workflows/close-milestone.yml)
+[![Kickoff Milestone Issues](https://github.com/PHYX-T/DMS/actions/workflows/kickoff-milestone-issues.yml/badge.svg)](https://github.com/PHYX-T/DMS/actions/workflows/kickoff-milestone-issues.yml)
 
 ISO 9001:2015–aligned Document Management System (DMS) with controlled workflows, audit trails, and fast, metadata-driven retrieval.
 
@@ -34,6 +37,18 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
 ## Backlog Seeding
 - Actions → run “Seed Backlog” to create milestones, labels, and issues from `.github/backlog.json`.
 
+## Workflows
+- CI (Python): Lint (Ruff), format (Black), and run tests (Pytest) on pushes/PRs to `main`.
+- Seed Backlog: Creates milestones/labels/issues from `.github/backlog.json` (manual trigger).
+- Close Milestone: Closes a milestone by title; default is “M0 – Foundation” (manual trigger).
+- Kickoff Milestone Issues: Creates only the issues for a selected milestone; default “M1 – Domain Models” (manual trigger).
+- Auto‑Add Issues to Project: New issues are auto-added to a GitHub Project (see setup below).
+
+Setup for Auto‑Add Issues
+- Create a GitHub Project (Projects v2) under your user or org.
+- In repo Settings → Variables → Actions, add `PROJECT_V2_NUMBER` with the project number from the URL.
+- New issues will be added to that project automatically.
+
 ## Session Summary (What We Set Up)
 - Repo scaffolding with domain-first structure and `AGENTS.md` contributor guide.
 - Python minimal API server with endpoints: `/`, `/health`, `/validate`, `/duplicate`, `/duplicates/*`.
@@ -54,4 +69,3 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
 - CI/CD: add DB service for integration tests; consider coverage upload.
 - Ops: add Dockerfile and container run scripts; document HOST/PORT for containers.
 - Security: secret scanning, input validation at boundaries, audit log write path.
-
