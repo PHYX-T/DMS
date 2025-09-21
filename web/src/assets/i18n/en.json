@@ -1,0 +1,24 @@
+{
+  "nav": { "documents": "Documents", "upload": "Upload", "reports": "Reports" },
+  "common": { "api": "API", "search": "Search", "create": "Create" },
+  "documents": {
+    "id": "Document ID",
+    "company": "Company",
+    "subsidiary": "Subsidiary",
+    "department": "Department",
+    "type": "Type",
+    "sequence": "Sequence (3 digits)",
+    "title": "Title",
+    "keywords": "Keywords",
+    "placeholderId": "ABC-XY-ENG-PRO-001"
+  },
+  "guides": {
+    "id": "Use Company-Subsidiary-Department-Type-Sequence.",
+    "company": "Select the legal entity responsible for the document.",
+    "subsidiary": "Choose the regional/business unit.",
+    "department": "Choose the owning department.",
+    "type": "POL: policy, PRO: procedure, WRK: work instruction.",
+    "sequence": "Three-digit running number, e.g., 001."
+  }
+}
+

@@ -1,0 +1,11 @@
+[
+  {
+    "path": "/",
+    "timings": [
+      { "metric": "interactive", "budget": 2000 },
+      { "metric": "first-contentful-paint", "budget": 1500 },
+      { "metric": "max-potential-fid", "budget": 100 }
+    ]
+  }
+]
+

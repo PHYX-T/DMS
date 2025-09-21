@@ -1,0 +1,3 @@
+ALTER TABLE document_files ADD COLUMN IF NOT EXISTS pdf_sha256 TEXT;
+ALTER TABLE document_files ADD COLUMN IF NOT EXISTS source_sha256 TEXT;
+

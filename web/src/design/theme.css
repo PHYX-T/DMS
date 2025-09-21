@@ -1,0 +1,53 @@
+/* Base theme variables (Light) */
+:root {
+  --bg: #f8fafc;           /* neutral-50 */
+  --surface: #ffffff;
+  --muted: #f1f5f9;        /* neutral-100 */
+  --border: #e2e8f0;       /* neutral-200 */
+  --content: #0f172a;      /* neutral-900 */
+  --content-muted: #334155;/* neutral-700 */
+
+  --accent: #2f8bf3;
+  --accent-600: #1670d7;
+  --accent-700: #125bb2;
+
+  --ok: #16a34a;   /* green-600 */
+  --warn: #d97706; /* amber-600 */
+  --error: #dc2626;/* red-600 */
+  --info: #2563eb; /* blue-600 */
+
+  --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Helvetica, Arial, sans-serif;
+}
+
+/* Dark */
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --surface: #0f172a;
+  --muted: #111827;
+  --border: #1f2937;
+  --content: #e5e7eb;
+  --content-muted: #9ca3af;
+
+  --accent: #57a8f8;
+  --accent-600: #2f8bf3;
+  --accent-700: #1670d7;
+}
+
+/* High Contrast */
+[data-theme="high-contrast"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --muted: #ffffff;
+  --border: #000000;
+  --content: #000000;
+  --content-muted: #000000;
+  --accent: #000000;
+  --accent-600: #000000;
+  --accent-700: #000000;
+}
+
+/* Density */
+[data-density="compact"] .dense-py { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+[data-density="compact"] .dense-px { padding-left: 0.5rem; padding-right: 0.5rem; }
+[data-density="compact"] .dense-input { min-height: 36px; }
+

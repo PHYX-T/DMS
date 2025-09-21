@@ -1,0 +1,16 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "refresh_interval": "1s",
+      "analysis": {
+        "analyzer": {
+          "dms_text": { "type": "standard", "stopwords": "_english_" },
+          "dms_keyword": { "type": "keyword" }
+        }
+      }
+    }
+  }
+}
+

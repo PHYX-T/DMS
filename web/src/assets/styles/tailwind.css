@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:focus-visible { @apply outline-none ring-2 ring-offset-2 ring-brand-500; }
+
+.container-app { @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
+
+button, a, input, select { min-height: var(--tap-target); }
+
+/* RTL helper */
+[dir='rtl'] .rtl-hidden { display: none; }
+

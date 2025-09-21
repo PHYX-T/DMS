@@ -1,11 +1,26 @@
-{
-  "mcpServers": {
-    "server-name": {
-      "command": "npx",
-      "args": ["-y", "mcp-server"],
-      "env": {
-        "API_KEY": "value"
-      }
-    }
-  }
-}
+# TestCodex MCP Server Configuration
+
+[mcpServers.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "/Users/noorawla/Documents/TestCodex"]
+startup_timeout_ms = 10000
+
+# Note: Brave search server is deprecated, but included for reference
+[mcpServers.brave-search]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-brave-search"]
+env = { "BRAVE_API_KEY" = "your-brave-api-key-here" }
+startup_timeout_ms = 10000
+
+# Custom PostgreSQL MCP server (you can create your own)
+# [mcpServers.postgres-custom]
+# command = "python3"
+# args = ["/Users/noorawla/Documents/TestCodex/scripts/mcp-postgres.py"]
+# env = { "DATABASE_URL" = "postgres://noorawla@localhost:5432/dms_dev" }
+# startup_timeout_ms = 15000
+
+# Memory server for context storage
+# [mcpServers.memory]
+# command = "npx"
+# args = ["-y", "@modelcontextprotocol/server-memory"]
+# startup_timeout_ms = 10000

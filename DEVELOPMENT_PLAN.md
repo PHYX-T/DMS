@@ -5,7 +5,7 @@
 
 ## Sprint Roadmap (Exit Criteria)
 - M0 – Foundation [Completed]: Repo scaffolding, Makefile, basic API (`/health`, `/validate`), tests and CI smoke. Exit: green CI, coding standards in place.
-- Sprint 1 – Database Schema: DB selection (Postgres), ERD, migrations, unique constraints, seed data. Exit: schema migrated locally with seed loaded.
+- Sprint 1 – Database Schema [Completed]: DB selection (Postgres), ERD, migrations, unique constraints, seed data. Exit: schema migrated locally with seed loaded.
 - Sprint 2 – Frontend Foundations: Vue/Tailwind scaffold, auth guards (stub), core views (Search, Upload, Document View, Review Queue, Reports) wired to mock adapters. Exit: UI flows navigable with mocked data.
 - Sprint 3 – Backend Logic & Workflows: Domain models, validation, Documents API CRUD, storage adapters, PDF publish, RBAC, workflow engine/endpoints, audit logging, OpenAPI, integration tests. Exit: end-to-end document lifecycle in dev.
 - Sprint 4 – Search & Reporting: Indexing strategy, search API with filters, KPIs/exports, performance harness. Exit: P95 search latency < 2s on seeded data.
@@ -118,3 +118,10 @@
 - Setup: `make setup`
 - Run API: `python3 -m src.app` (override with `.env` HOST/PORT)
 - Tests: `make test` | Lint: `make lint` | Format: `make format`
+
+## Sprint 1 Outcome (Artifacts)
+- Migrations: `migrations/0001_init.sql`, `0002_seed_codes.sql`, `0003_hardening.sql`
+- ERD (Mermaid): `assets/erd/dms_erd.mmd`
+- Constraints: UNIQUE `documents.doc_code`, regex CHECK on `doc_code`, NOT NULL on key metadata, version non-negative check
+- Audit: append-only triggers; broader action set; retain logs on document delete
+- Indexes: status/codes/dates + GIN index on `documents.keywords`

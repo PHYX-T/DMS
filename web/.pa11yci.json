@@ -1,0 +1,12 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "timeout": 30000
+  },
+  "urls": [
+    "http://localhost:5173/",
+    "http://localhost:5173/upload",
+    "http://localhost:5173/documents"
+  ]
+}
+

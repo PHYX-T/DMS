@@ -7,6 +7,52 @@
 
 ISO 9001:2015–aligned Document Management System (DMS) with controlled workflows, audit trails, and fast, metadata-driven retrieval.
 
+## Web UI (Vue 3 + Vite)
+
+- Location: `web/`
+- Run (with mock API):
+  - Terminal A: `cd web && npm ci && npm run mock-api` (starts on 8000)
+  - Terminal B: `cd web && npm run dev` (Vite on 5173; proxies `/api` → 8000)
+- Build/Preview: `cd web && npm run build && npm run preview`
+- Tests:
+  - Unit (Vitest): `cd web && npm test -- --run`
+  - E2E (Cypress): `cd web && npm run cy:open` (or `cy:run`)
+  - A11y (Pa11y): `cd web && ./scripts/a11y.sh` (after `npm run preview`)
+  - Lighthouse CI: `cd web && npm run lhci`
+- PWA Shell: basic Service Worker registered (offline shell + cache)
+- Telemetry: opt‑in, admin‑visible charts in Admin → Settings
+
+### Design System
+
+- Tokens: `web/src/design/tokens.ts`, CSS vars in `web/src/design/theme.css`, base in `web/src/design/base.css`
+- Themes: Light/Dark/High‑contrast via `applyTheme(theme, density)`; persisted across sessions
+- Density: Comfortable/Compact via `[data-density]` + helpers (`dense-px`, `dense-py`, `dense-input`)
+- Elevation: `.e1`–`.e4` utilities; focus ring honors tokens
+- Components: in `web/src/components/ui` and `web/src/components/data` with examples in `*.stories.ts`
+- Usage:
+  ```ts
+  import { tokens, applyTheme } from '@/design/tokens'
+  applyTheme('dark', 'compact') // runtime switch
+  ```
+
+### Routing & Guards
+
+- File: `web/src/app/router/index.ts`
+- Public: `/login`, `/status`, `/help`; Auth guard for others; role meta (`requiredRoles`) + toast on deny
+- Dashboard is role‑aware; External Auditor approved‑only enforced in Document View
+
+### Mock API & Seeds
+
+- Start: `cd web && npm run mock-api`
+- Endpoints:
+  - `/codes/:kind` (ETag/304), `/users`, `/documents?code=` or `/documents/:id`, `/files/pdf/:id?v=`, `/search`, `/audit`
+- Seeds: 60+ documents with diverse codes/status/versions/retention; 6+ users (one per role + delegation extras); code list conflicts
+
+### CI
+
+- GitHub Actions: `.github/workflows/ci.yml` runs unit, e2e, a11y, and Lighthouse budgets (Perf ≥ 90, A11y ≥ 95, Best Practices ≥ 95)
+- Budgets: `web/budgets.json`; LH config: `web/lighthouserc.js`
+
 ## Quickstart
 - Requirements: Python 3.11+
 - Optional: PostgreSQL for database development
@@ -16,13 +62,26 @@ ISO 9001:2015–aligned Document Management System (DMS) with controlled workflo
   - `GET /` – index page with links
   - `GET /health` – health check
   - `GET /validate?id=ABC-XY-ENG-PRO-001` – document ID validation
-  - `GET /duplicate?id=<ID>` – duplicate check (in-memory demo)
+- `GET /duplicate?id=<ID>` – duplicate check (DB-backed when `DATABASE_URL` is set; falls back to in-memory demo)
 
 ## Development
 - Format: `make format` (Black / Prettier)
 - Lint: `make lint` (Ruff + Black check)
 - Tests: `make test` (pytest)
 - Configure env: copy `.env.example` → `.env`; set `HOST`/`PORT`.
+
+### Frontend (Vue + Vite)
+- Location: `frontend/`
+- Dev server: `make run-frontend` (proxies `/api` to `http://127.0.0.1:8000`)
+- Build: `make build-frontend` (outputs to `frontend/dist/`)
+- API base: use `import.meta.env.VITE_API_BASE` (defaults to `/api`)
+- Role picker: header dropdown persists to localStorage; Upload uses this for `X-Role` header
+
+Serve UI from Python API (single port)
+- Build the frontend: `make build-frontend`
+- Start API: `python3 -m src.api.server` (or `make run-api`)
+- Open UI at: `http://127.0.0.1:8000/ui`
+- Notes: the API also accepts `/api/*` paths (rewritten server-side) for convenience.
 
 ## Project Structure
 - `src/core/{documents,codes,workflows,rbac,audit}` – domain logic
@@ -79,3 +138,12 @@ Setup for Auto‑Add Issues
 - CI/CD: add DB service for integration tests; consider coverage upload.
 - Ops: add Dockerfile and container run scripts; document HOST/PORT for containers.
 - Security: secret scanning, input validation at boundaries, audit log write path.
+
+## API Endpoints (Current)
+- `GET /health` – health check
+- `GET /validate?id=<DOC_CODE>` – document ID validation
+- `GET /duplicate?id=<DOC_CODE>` – duplicate check (DB-backed when `DATABASE_URL` is set; fallback in-memory)
+- `GET /documents?code=<DOC_CODE>` – fetch a document by `doc_code`
+- `POST /documents` – create a document
+  - Headers: `X-Role` must be `Controller`, `Admin`, or `QMS`
+  - Body requires: `doc_code`, `title`, `company_code`, `subsidiary_code`, `department_code`, `document_type_code`

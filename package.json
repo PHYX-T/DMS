@@ -1,0 +1,23 @@
+{
+  "name": "testcodex-dms",
+  "version": "1.0.0",
+  "description": "TestCodex Document Management System with MCP server support",
+  "private": true,
+  "scripts": {
+    "test-mcp": "node scripts/verify-mcp.js",
+    "install-mcp": "npm install --save-dev @modelcontextprotocol/server-filesystem @modelcontextprotocol/server-brave-search",
+    "mcp-help": "echo 'MCP Servers configured. See MCP_SETUP.md for details.'"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/server-brave-search": "^0.6.2",
+    "@modelcontextprotocol/server-filesystem": "^2025.8.21"
+  },
+  "keywords": [
+    "document-management",
+    "iso-9001",
+    "mcp",
+    "model-context-protocol"
+  ],
+  "author": "TestCodex Team",
+  "license": "ISC"
+}

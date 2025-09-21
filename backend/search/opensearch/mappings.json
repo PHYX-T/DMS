@@ -1,0 +1,23 @@
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "doc_id": { "type": "keyword" },
+      "title": { "type": "text", "analyzer": "dms_text", "fields": { "raw": { "type": "keyword" } } },
+      "status": { "type": "keyword" },
+      "version": { "type": "keyword" },
+      "latest_approved": { "type": "boolean" },
+      "owner_id": { "type": "keyword" },
+      "company_code": { "type": "keyword" },
+      "subsidiary_code": { "type": "keyword" },
+      "department_code": { "type": "keyword" },
+      "document_type_code": { "type": "keyword" },
+      "issue_date": { "type": "date" },
+      "review_date": { "type": "date" },
+      "retention_years": { "type": "integer" },
+      "keywords": { "type": "keyword" },
+      "content": { "type": "text", "analyzer": "dms_text" }
+    }
+  }
+}
+

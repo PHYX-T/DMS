@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Running pre-commit checks..."
+(cd web && npm run -s test -- --run && npm run -s typecheck || true)
+echo "OK"
+

@@ -1,0 +1,84 @@
+erDiagram
+  company_codes {
+    char(3) code PK
+    text name
+  }
+
+  subsidiary_codes {
+    char(2) code PK
+    text name
+  }
+
+  department_codes {
+    char(3) code PK
+    text name
+  }
+
+  document_type_codes {
+    char(3) code PK
+    text name
+  }
+
+  users {
+    bigserial id PK
+    text email UNIQUE
+    text display_name
+    timestamptz created_at
+  }
+
+  documents {
+    bigserial id PK
+    varchar(20) doc_code UNIQUE
+    text title
+    int version_major
+    int version_minor
+    varchar(16) status
+    char(3) company_code FK
+    char(2) subsidiary_code FK
+    char(3) department_code FK
+    char(3) document_type_code FK
+    bigint owner_id FK NULL
+    bigint controller_id FK NULL
+    date issue_date
+    date review_date
+    text[] keywords
+    text description
+    text pdf_path
+    text source_path
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  audit_logs {
+    bigserial id PK
+    bigint document_id FK NULL
+    text action
+    bigint user_id FK NULL
+    timestamptz at
+    jsonb data
+  }
+
+  roles {
+    text name PK
+    text description
+  }
+
+  user_roles {
+    bigint user_id FK
+    text role_name FK
+  }
+
+  documents }o--|| company_codes : "company_code"
+  documents }o--|| subsidiary_codes : "subsidiary_code"
+  documents }o--|| department_codes : "department_code"
+  documents }o--|| document_type_codes : "document_type_code"
+
+  documents }o--o{ users : "owner_id"
+  documents }o--o{ users : "controller_id"
+
+  audit_logs }o--|| documents : "document_id"
+  audit_logs }o--o{ users : "user_id"
+
+  user_roles }o--|| users : "user_id"
+  user_roles }o--|| roles : "role_name"
+

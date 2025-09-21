@@ -1,0 +1,189 @@
+openapi: 3.1.0
+info:
+  title: DMS API
+  version: 1.0.0
+  description: Document Management & Control API (ISO 9001, GDPR, WORM audit)
+servers:
+  - url: https://api.example.com/api/v1
+    description: Production
+  - url: http://localhost:3000/api/v1
+    description: Local
+security:
+  - bearerAuth: []
+  - oauth2: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize
+          tokenUrl: https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
+          scopes:
+            openid: OIDC
+            profile: User profile
+            email: Email
+  schemas:
+    Error:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+    CreateDocument:
+      type: object
+      required: [ID, Title, Metadata]
+      properties:
+        ID: { type: string, pattern: '^[A-Z]{3}-[A-Z]{2}-[A-Z]{3}-[A-Z]{3}-\\d{3}$' }
+        Title: { type: string }
+        Metadata:
+          type: object
+          required: [CompanyCode, SubsidiaryCode, DepartmentCode, DocumentTypeCode, IssueDate, ReviewDate, Keywords, Description, RetentionSchedule]
+          properties:
+            CompanyCode: { type: string, minLength: 3, maxLength: 3 }
+            SubsidiaryCode: { type: string, minLength: 2, maxLength: 2 }
+            DepartmentCode: { type: string, minLength: 3, maxLength: 3 }
+            DocumentTypeCode: { type: string, minLength: 3, maxLength: 3 }
+            IssueDate: { type: string, format: date }
+            ReviewDate: { type: string, format: date }
+            Keywords: { type: array, items: { type: string, maxLength: 64 }, maxItems: 10 }
+            Description: { type: string, maxLength: 500 }
+            RetentionSchedule:
+              type: object
+              properties:
+                policy: { type: string, enum: [WORM, STANDARD] }
+                durationMonths: { type: integer, minimum: 0 }
+                startDate: { type: string, format: date }
+paths:
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: Get current session
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { user: { type: object } }
+        '401': { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error' }, examples: { unauthorized: { value: { code: 'unauthorized', message: 'Unauthorized' } } } } } }
+        '500': { description: Server error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /documents:
+    post:
+      tags: [documents]
+      summary: Create draft document
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateDocument' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json: { schema: { type: object, properties: { id: { type: string } } } }
+        '400': { description: Validation error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' }, examples: { invalid_codes: { value: { code: 'invalid_codes', message: 'One or more codes are inactive' } } } } } }
+        '409': { description: Duplicate doc_id, content: { application/json: { schema: { $ref: '#/components/schemas/Error' }, examples: { duplicate: { value: { code: 'duplicate', message: 'Resource already exists', details: { hint: 'Use a different doc_id' } } } } } } }
+        '500': { description: Server error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    get:
+      tags: [documents]
+      summary: List documents (paginated)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, minimum: 1, maximum: 100 }
+      responses:
+        '200': { description: Page of documents }
+  /documents/{id}:
+    get:
+      tags: [documents]
+      summary: Get document detail
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Document detail }
+        '404': { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/Error' }, examples: { not_found: { value: { code: 'not_found', message: 'Document not found' } } } } } }
+  /documents/{id}/history:
+    get:
+      tags: [documents]
+      summary: Change history
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: History entries }
+  /documents/{id}/submit:
+    post:
+      tags: [workflow]
+      summary: Submit document for review/owner-approval
+      requestBody: { required: false, content: { application/json: { schema: { type: object, properties: { minor: { type: boolean } } } } } }
+      responses:
+        '201': { description: Submitted }
+        '400': { description: Invalid transition, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /documents/{id}/approve:
+    post:
+      tags: [workflow]
+      summary: Approve document
+      responses: { '201': { description: Approved } }
+  /documents/{id}/reject:
+    post:
+      tags: [workflow]
+      summary: Reject document
+      responses: { '201': { description: Rejected } }
+  /documents/{id}/publish:
+    post:
+      tags: [workflow]
+      summary: Publish document
+      responses: { '201': { description: Published }, '400': { description: Pre-publish failed, content: { application/json: { schema: { $ref: '#/components/schemas/Error' }, examples: { missing_files: { value: { code: 'bad_request', message: 'prepublish_failed', details: { pdf: false, source: true } } } } } } } }
+  /search:
+    get:
+      tags: [search]
+      summary: Search documents (facets)
+      parameters:
+        - { in: query, name: q, schema: { type: string } }
+        - { in: query, name: company, schema: { type: string } }
+        - { in: query, name: subsidiary, schema: { type: string } }
+        - { in: query, name: department, schema: { type: string } }
+        - { in: query, name: type, schema: { type: string } }
+        - { in: query, name: status, schema: { type: string } }
+        - { in: query, name: owner, schema: { type: string } }
+        - { in: query, name: review_from, schema: { type: string, format: date } }
+        - { in: query, name: review_to, schema: { type: string, format: date } }
+        - { in: query, name: retention, schema: { type: string } }
+        - { in: query, name: page, schema: { type: integer, minimum: 1 } }
+        - { in: query, name: size, schema: { type: integer, minimum: 1, maximum: 100 } }
+        - { in: query, name: sort, schema: { type: string } }
+      responses:
+        '200': { description: Search results with facets and elapsed_ms }
+  /reports/kpis:
+    get:
+      tags: [reports]
+      summary: KPIs overview
+      parameters:
+        - { in: query, name: from, schema: { type: string, format: date } }
+        - { in: query, name: to, schema: { type: string, format: date } }
+        - { in: query, name: dept, schema: { type: string } }
+        - { in: query, name: type, schema: { type: string } }
+      responses:
+        '200': { description: KPIs payload }
+  /reports/trends:
+    get:
+      tags: [reports]
+      summary: Trend series
+      parameters: [ { in: query, name: metric, schema: { type: string } }, { in: query, name: dept, schema: { type: string } } ]
+      responses: { '200': { description: Series } }

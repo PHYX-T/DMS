@@ -6,12 +6,16 @@ help:
 	@echo "Available targets:"
 	@echo "  make setup  - Install dependencies if manifest exists"
 	@echo "  make run    - Run the app (best-effort across stacks)"
+	@echo "  make run-api - Run Python API server (loads .env)"
 	@echo "  make test   - Run tests across common toolchains"
 	@echo "  make lint   - Run linters/format checks when available"
 	@echo "  make format - Apply autoformatters (Black/Prettier/etc.)"
 	@echo "  make build  - Build/compile project when applicable"
 	@echo "  make clean  - Remove typical build artifacts"
 	@echo "  make migrate-psql - Apply SQL migrations with psql (DATABASE_URL required)"
+	@echo "  make erd     - Generate ERD image(s) from Mermaid source"
+	@echo "  make web-dev - Start Vite dev server (web/)"
+	@echo "  make web-build - Build frontend (web/)"
 
 setup:
 	@if [ -f package.json ]; then \
@@ -130,3 +134,19 @@ migrate-psql:
 		exit 1; \
 	fi; \
 	bash scripts/migrate.sh
+
+erd:
+	@bash scripts/gen-erd.sh
+
+run-api:
+	@echo "Loading .env (HOST/PORT) and starting API..."
+	@set -a; \
+	[ -f .env ] && . ./.env; \
+	set +a; \
+	python3 -m src.api.server
+
+web-dev:
+	@cd web && npm run dev
+
+web-build:
+	@cd web && npm run build
